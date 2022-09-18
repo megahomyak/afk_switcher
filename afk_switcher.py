@@ -75,7 +75,6 @@ class TaskBarIcon(wx.adv.TaskBarIcon):
 
     def set_icon_color(self, color):
         image = Image.new("RGB", (256, 256), color=color)
-        print(image.getpixel((0, 0)))
         icon = wx.Icon()
         icon.CopyFromBitmap(
             wx.Bitmap.FromBuffer(
