@@ -15,5 +15,6 @@ How?
 
 Instruction is the same as in `obs_scene_switcher`_, except that it only
 switches to the scene named "AFK" and switches back when the cursor is moved.
+Also, the script name is obviously different.
 
 .. _obs_scene_switcher: https://github.com/megahomyak/obs_scene_switcher
