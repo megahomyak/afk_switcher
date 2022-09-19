@@ -10,6 +10,7 @@ OP_IDENTIFY = 1
 OP_IDENTIFIED = 2
 OP_REQUEST = 6
 OP_RESPONSE = 7
+AFK_SCENE_NAME = "AFK"
 socket = websocket.WebSocket()
 socket.connect("ws://localhost:4455")
 
@@ -63,15 +64,16 @@ class TaskBarIcon(wx.adv.TaskBarIcon):
         request("GetCurrentProgramScene", data=None)
         scenes_info = receive_response()
         prev_scene_name = scenes_info["currentProgramSceneName"]
-        request(
-            "SetCurrentProgramScene",
-            {"sceneName": "AFK"}
-        )
-        self.set_icon_color("green")
-        listener = mouse.Listener(
-            on_move=lambda _x, _y: self.go_active(prev_scene_name)
-        )
-        listener.start()
+        if prev_scene_name != AFK_SCENE_NAME:
+            request(
+                "SetCurrentProgramScene",
+                {"sceneName": AFK_SCENE_NAME}
+            )
+            self.set_icon_color("green")
+            listener = mouse.Listener(
+                on_move=lambda _x, _y: self.go_active(prev_scene_name)
+            )
+            listener.start()
 
     def set_icon_color(self, color):
         image = Image.new("RGB", (256, 256), color=color)
