@@ -9,6 +9,9 @@ Why?
 ----
 
 Because I keep forgetting to switch the scene back with `obs_scene_switcher`_.
+Also, `obs_scene_switcher`_ made it impossible for me to create more than two
+scenes ("Main" and "AFK"), since it switched to the next scene instead of going
+forward and back (like this script does).
 
 How?
 ----
