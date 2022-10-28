@@ -11,8 +11,8 @@ OP_IDENTIFIED = 2
 OP_REQUEST = 6
 OP_RESPONSE = 7
 AFK_SCENE_NAME = "AFK"
+
 socket = websocket.WebSocket()
-socket.connect("ws://localhost:4455")
 
 
 def recv():
@@ -40,10 +40,21 @@ def receive_response():
                 pass
 
 
-resp = recv()
-assert resp["op"] == OP_HELLO
-send({"op": OP_IDENTIFY, "d": {"rpcVersion": resp["d"]["rpcVersion"]}})
-assert recv()["op"] == OP_IDENTIFIED
+def connect():
+    global socket
+    socket = websocket.WebSocket()
+    socket.connect("ws://localhost:4455")
+    resp = recv()
+    assert resp["op"] == OP_HELLO
+    send({"op": OP_IDENTIFY, "d": {"rpcVersion": resp["d"]["rpcVersion"]}})
+    assert recv()["op"] == OP_IDENTIFIED
+
+
+connect()
+
+
+class CannotReconnect(Exception):
+    pass
 
 
 class TaskBarIcon(wx.adv.TaskBarIcon):
@@ -61,8 +72,16 @@ class TaskBarIcon(wx.adv.TaskBarIcon):
         return False  # To stop the mouse listener
 
     def go_afk(self):
-        request("GetCurrentProgramScene", data=None)
-        scenes_info = receive_response()
+        for _ in range(2):
+            try:
+                request("GetCurrentProgramScene", data=None)
+                scenes_info = receive_response()
+            except BrokenPipeError:
+                connect()
+            else:
+                break
+        else:
+            raise CannotReconnect()
         prev_scene_name = scenes_info["currentProgramSceneName"]
         if prev_scene_name != AFK_SCENE_NAME:
             request(
