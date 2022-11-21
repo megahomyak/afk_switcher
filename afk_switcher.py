@@ -50,9 +50,6 @@ def connect():
     assert recv()["op"] == OP_IDENTIFIED
 
 
-connect()
-
-
 class CannotReconnect(Exception):
     pass
 
@@ -76,7 +73,7 @@ class TaskBarIcon(wx.adv.TaskBarIcon):
             try:
                 request("GetCurrentProgramScene", data=None)
                 scenes_info = receive_response()
-            except BrokenPipeError:
+            except (BrokenPipeError, websocket.WebSocketConnectionClosedException):
                 connect()
             else:
                 break
